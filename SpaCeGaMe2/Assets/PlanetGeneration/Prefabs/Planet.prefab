@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ffab27c1b9552b49892ff6217c99b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planePrefab: {fileID: 934880966695707334}
-  width: 10
+  width: 8
   definition: 1
   directions: {fileID: 11400000, guid: ba60a4f64ac43b641ace660d9045f708, type: 2}
 --- !u!33 &934880966695707332

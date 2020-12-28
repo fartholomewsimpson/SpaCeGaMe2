@@ -1,8 +1,10 @@
 ﻿using ScriptableObjects;
+using UnityEditor;
 using UnityEngine;
 
 namespace PlanetGeneration
 {
+    [ExecuteInEditMode]
     [RequireComponent(typeof(MeshFilter))]
     public class SphereMeshGenerator : MonoBehaviour
     {
@@ -14,37 +16,39 @@ namespace PlanetGeneration
         public int definition = 1;
         public Directions directions;
 
-        // void Awake()
-        // {
-        //     Refresh();
-        // }
+        void Start()
+        {
+            Refresh();
+        }
+
+        void Awake()
+        {
+            Refresh();
+        }
 
         void Update()
         {
             Refresh();
         }
 
-        void Start()
-        {
-            Refresh();
-        }
         void Refresh()
         {
-            // TODO: Remove old children
-            var children = GetComponentsInChildren<MeshFilter>();
             var pos = transform.position;
-            var radius = width/2;
+            var radius = width/2f;
             var combines = new CombineInstance[directions.directions.Length];
+
             for (int i = 0; i < combines.Length; i++)
             {
-                var planeObj = new GameObject($"face_{i}");
+                var planeObj = new GameObject($"face_{i}").transform;
                 planeObj.transform.parent = transform;
-                var planeMesh = planeObj.AddComponent<MeshFilter>().mesh;
-                planeMesh.Clear();
+                var planeMesh = planeObj.gameObject.AddComponent<MeshFilter>().sharedMesh;
+                if (planeMesh == null)
+                    planeMesh = new Mesh();
+
                 planeMesh.vertices = MeshGenerationUtils.GeneratePlaneVertices(planeObj.transform.position, width, definition);
                 planeMesh.triangles = MeshGenerationUtils.GeneratePlaneTriangles(width, definition);
                 planeObj.transform.LookAt(-directions.directions[i]);
-                planeObj.transform.localPosition = directions.directions[i] * radius;
+                planeObj.transform.localPosition = planeObj.transform.localPosition + (directions.directions[i] * radius);
 
                 combines[i].mesh = planeMesh;
                 combines[i].transform = planeObj.transform.localToWorldMatrix;
@@ -53,6 +57,23 @@ namespace PlanetGeneration
             var mesh = GetComponent<MeshFilter>().mesh;
             mesh.Clear();
             mesh.CombineMeshes(combines, true, true, false);
+
+            foreach (Transform child in transform)
+            {
+                child.gameObject.SetActive(false);
+                if (!EditorApplication.isPlaying)
+                    DestroyImmediate(child.gameObject);
+                else
+                    Destroy(child.gameObject);
+            }
+
+            var newVertices = mesh.vertices;
+            for (int i = 0; i < newVertices.Length; i++)
+            {
+                var dist = newVertices[i] - transform.position;
+                newVertices[i] = dist.normalized * radius;
+            }
+            mesh.vertices = newVertices;
             mesh.RecalculateNormals();
         }
 
