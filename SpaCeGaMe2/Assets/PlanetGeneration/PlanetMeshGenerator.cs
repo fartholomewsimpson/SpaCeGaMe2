@@ -28,10 +28,10 @@ namespace PlanetGeneration
 
         void Update()
         {
-            Refresh();
+            if (!EditorApplication.isPlaying)
+                Refresh();
         }
 
-        // TODO: I want to have separate components for making terrain, but currently it lives in here.
         void Refresh()
         {
             var pos = transform.position;
@@ -50,13 +50,13 @@ namespace PlanetGeneration
                 planeMesh.vertices = MeshGenerationUtils.GeneratePlaneVertices(planeObj.transform.position, width, definition);
                 planeMesh.triangles = MeshGenerationUtils.GeneratePlaneTriangles(width, definition);
 
-                // Generate random point heights on Plane mesh
-                for (int j = 0; j < planeMesh.vertices.Length; j++)
-                {
-                    var vertex = planeMesh.vertices[j];
-                    vertex.z = Mathf.PerlinNoise(vertex.x, vertex.y) * radius;
-                    planeMesh.vertices[j] = vertex;
-                }
+                // Generate random heights on Plane mesh
+                // for (int j = 0; j < planeMesh.vertices.Length; j++)
+                // {
+                //     var vertex = planeMesh.vertices[j];
+                //     vertex.z = Mathf.PerlinNoise(vertex.x, vertex.y) * radius;
+                //     planeMesh.vertices[j] = vertex;
+                // }
 
                 planeObj.transform.LookAt(-directions.directions[i]);
                 planeObj.transform.localPosition = planeObj.transform.localPosition + (directions.directions[i] * radius);
