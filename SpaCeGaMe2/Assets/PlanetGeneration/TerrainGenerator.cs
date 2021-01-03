@@ -11,8 +11,13 @@ namespace PlanetGeneration
         // number of vertices per unit of width
         [Range(1, 5)]
         public int definition = 1;
+        // public NoiseLayer[] noiseLayers;
         [Range(1, 10)]
-        public float noiseIntensity = 1;
+        public float frequency  = 3;
+        [Range(0, 1)]
+        public float detail = .5f;
+        [Range(1, 3)]
+        public int numberOfLayers = 3;
         public Directions directions;
         public PlanetFaces planetFaces;
 
@@ -77,25 +82,30 @@ namespace PlanetGeneration
 
         void GetNoisy(Face[] faces)
         {
-            var vertWidth = (width+1) * 2;
             for (int i = 0; i < faces.Length; i++)
             {
                 var verts = faces[i].vertices;
                 for (int j = 0; j < verts.Length; j++)
                 {
-                    var x = NormalizedNoise(verts[j].x);
-                    var y = NormalizedNoise(verts[j].y);
-                    verts[j].z = Mathf.PerlinNoise(x,y);
+                    verts[j].z = MakeSomeNoise(verts[j]);
                 }
                 faces[i].vertices = verts;
             }
         }
 
-        float NormalizedNoise(float value)
+        float MakeSomeNoise(Vector2 value)
         {
-            // TODO: What to do with noise intensity.
-            var vWidth = MeshGenerationUtils.GetVerticesWidth(width, definition);
-            return Mathf.Pow(Mathf.Abs(value / vWidth), noiseIntensity);
+            float noise = 0;
+            float freq = 1;
+            float factor = 1;
+
+            for (int i = 0; i < numberOfLayers; i++)
+            {
+                noise += Mathf.PerlinNoise(value.x*freq*i, value.y*freq*i) * factor;
+                freq *= frequency;
+                factor *= detail;
+            }
+            return noise;
         }
     }
 }

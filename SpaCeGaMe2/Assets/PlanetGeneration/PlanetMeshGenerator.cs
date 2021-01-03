@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PlanetGeneration
 {
+    // DEPRECATED
     [ExecuteInEditMode]
     [RequireComponent(typeof(MeshFilter))]
     public class PlanetMeshGenerator : MonoBehaviour

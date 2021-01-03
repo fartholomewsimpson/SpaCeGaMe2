@@ -1,4 +1,5 @@
-﻿using ScriptableObjects;
+﻿using System.Linq;
+using ScriptableObjects;
 using UnityEngine;
 
 namespace PlanetGeneration
@@ -12,8 +13,7 @@ namespace PlanetGeneration
 
         void Start()
         {
-            if (Application.isPlaying)
-                planetFaces.Subscribe(name, OnRefresh);
+            planetFaces.Subscribe(name, OnRefresh);
         }
 
         void Update()
@@ -29,7 +29,7 @@ namespace PlanetGeneration
             var face = faces[cur];
             var mesh = GetComponent<MeshFilter>().sharedMesh;
             mesh.Clear();
-            mesh.vertices = face.vertices;
+            mesh.vertices = face.vertices.Select(v => new Vector3(v.x, v.y, 0)).ToArray();
             mesh.triangles = face.triangles;
             mesh.colors = GetColorValues(face.vertices);
             mesh.uv = GetUVs(face.vertices);
