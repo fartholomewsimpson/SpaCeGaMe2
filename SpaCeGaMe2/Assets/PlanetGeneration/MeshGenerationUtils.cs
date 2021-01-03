@@ -54,7 +54,7 @@ namespace PlanetGeneration
             return triangles;
         }
 
-        static int GetVerticesWidth(int width, int definition)
+        public static int GetVerticesWidth(int width, int definition)
         {
             // subtract (definition-1) to exclude adding additional definition points after the last row/column
             return ((width+1) * definition) - (definition-1);

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 934880966695707333}
-  - component: {fileID: 8263504637427819626}
   - component: {fileID: 934880966695707330}
   - component: {fileID: 2860436676659310517}
+  - component: {fileID: 1643031159607867843}
   m_Layer: 0
   m_Name: Planet
   m_TagString: Untagged
@@ -33,21 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8263504637427819626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 934880966695707334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4e13a00792427041ad696b764c04606, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  width: 10
-  definition: 1
-  directions: {fileID: 11400000, guid: ba60a4f64ac43b641ace660d9045f708, type: 2}
 --- !u!23 &934880966695707330
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -95,3 +80,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 934880966695707334}
   m_Mesh: {fileID: 0}
+--- !u!114 &1643031159607867843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934880966695707334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4e13a00792427041ad696b764c04606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 22
+  definition: 1
+  noiseIntensity: 2.31
+  directions: {fileID: 11400000, guid: ba60a4f64ac43b641ace660d9045f708, type: 2}
+  planetFaces: {fileID: 11400000, guid: c6d547f537a784c409c7743d28bbf90d, type: 2}

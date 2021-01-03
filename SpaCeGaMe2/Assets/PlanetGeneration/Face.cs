@@ -2,6 +2,7 @@
 
 namespace PlanetGeneration
 {
+    [System.Serializable]
     public class Face
     {
         public int width;
@@ -9,6 +10,6 @@ namespace PlanetGeneration
         public Vector3 direction;
         public Vector3[] vertices;
         public int[] triangles;
-        public Face[] neighbors;
+        [System.NonSerialized] public Face[] neighbors;
     }
 }
