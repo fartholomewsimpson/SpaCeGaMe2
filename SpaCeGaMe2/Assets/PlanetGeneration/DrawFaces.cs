@@ -10,6 +10,7 @@ namespace PlanetGeneration
         public PlanetFaces planetFaces;
 
         int cur = 0;
+        bool terrainColors = false;
 
         void Start()
         {
@@ -21,6 +22,12 @@ namespace PlanetGeneration
             if (Input.GetKeyDown(KeyCode.M))
             {
                 cur = (cur + 1) % planetFaces.Faces.Length;
+                OnRefresh(planetFaces.Faces);
+            }
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                terrainColors = !terrainColors;
+                OnRefresh(planetFaces.Faces);
             }
         }
 
@@ -41,7 +48,21 @@ namespace PlanetGeneration
             var colors = new Color[vertices.Length];
             for (int i = 0; i < colors.Length; i++)
             {
-                colors[i] = new Color(vertices[i].z, vertices[i].z, vertices[i].z);
+                var colVal = vertices[i].z;
+                if (terrainColors)
+                {
+                    // TODO: Instead of incrementing between 0 and 1, go between min and max verts[i].z value.
+                    if (colVal < .3f)
+                        colors[i] = Color.blue;
+                    else if (colVal < .6f)
+                        colors[i] = Color.green;
+                    else if (colVal < .9f)
+                        colors[i] = Color.grey;
+                    else
+                        colors[i] = Color.white;
+                }
+                else
+                    colors[i] = new Color(colVal, colVal, colVal);
             }
             return colors;
         }

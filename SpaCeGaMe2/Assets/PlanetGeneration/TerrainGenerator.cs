@@ -8,30 +8,37 @@ namespace PlanetGeneration
     {
         [Range(1, 50)]
         public int width = 10;
-        // number of vertices per unit of width
         [Range(1, 5)]
         public int definition = 1;
-        // public NoiseLayer[] noiseLayers;
-        [Range(1, 10)]
-        public float frequency  = 3;
-        [Range(0, 1)]
-        public float detail = .5f;
-        [Range(1, 3)]
-        public int numberOfLayers = 3;
+
+        [Range(1,10)]
+        public float persistence  = 1;
+        [Range(1,8)]
+        public float lacunarity = 1;
+        [Range(0,1)]
+        public float sparcity = .5f;
+
         public Directions directions;
         public PlanetFaces planetFaces;
 
+        public NoiseLayer[] noiseLayers;
+        float constDisplacementX;
+        float constDisplacementY;
+
+# region Lifecycle
         void Refresh()
         {
             var faces = GenerateFaces(width, definition);
             SetNeighbors(faces);
             GetNoisy(faces);
-
             planetFaces.Refresh(faces);
         }
 
         void Start()
         {
+            Random.InitState(name.GetHashCode());
+            constDisplacementX = Random.value;
+            constDisplacementY = Random.value;
             Refresh();
         }
 
@@ -40,6 +47,8 @@ namespace PlanetGeneration
             if (Application.isPlaying)
                 Refresh();
         }
+
+# endregion
 
         Face[] GenerateFaces(int width, int definition)
         {
@@ -85,11 +94,27 @@ namespace PlanetGeneration
             for (int i = 0; i < faces.Length; i++)
             {
                 var verts = faces[i].vertices;
+                float maxNoise = 0;
+                float minNoise = float.MaxValue;
                 for (int j = 0; j < verts.Length; j++)
                 {
-                    verts[j].z = MakeSomeNoise(verts[j]);
+                    var noise = MakeSomeNoise(verts[j]);
+                    if (noise > maxNoise)
+                        maxNoise = noise;
+                    if (noise < minNoise)
+                        minNoise = noise;
+                    verts[j].z = noise;
                 }
-                faces[i].vertices = verts;
+
+                // float range = maxNoise-minNoise;
+                // for (int j = 0; j < verts.Length; j++)
+                // {
+                //     float percentile = (verts[j].z - minNoise) / range;
+                //     verts[j].z *= percentile - sparcity;
+                //     // TODO: Fix sparcity normalization
+                //     // if (percentile < sparcity)
+                //     //     verts[j].z *= sparcity - percentile;
+                // }
             }
         }
 
@@ -97,13 +122,14 @@ namespace PlanetGeneration
         {
             float noise = 0;
             float freq = 1;
-            float factor = 1;
-
-            for (int i = 0; i < numberOfLayers; i++)
+            float amp = 1;
+            for (int i = 0; i < noiseLayers.Length; i++)
             {
-                noise += Mathf.PerlinNoise(value.x*freq*i, value.y*freq*i) * factor;
-                freq *= frequency;
-                factor *= detail;
+                var layer = noiseLayers[i];
+                freq *= layer.frequency * (i+1) * lacunarity;
+                var flatNoise = Mathf.PerlinNoise(value.x * freq, value.y * freq);
+                amp *= (amp * (i+1)) / persistence;
+                noise += flatNoise * amp;
             }
             return noise;
         }
