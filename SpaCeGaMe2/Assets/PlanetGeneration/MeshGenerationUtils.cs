@@ -11,8 +11,8 @@ namespace PlanetGeneration
 
             var topLeft = new Vector3(
                 position.x - (width/2f),
-                position.y - (width/2f),
-                position.z);
+                position.y,
+                position.z - (width/2f));
             float fDef = (float)definition;
 
             for (int i = 0; i < verticesWidth; i++)
@@ -22,8 +22,8 @@ namespace PlanetGeneration
                     var vertexIndex = (verticesWidth * i) + j;
                     vertices[vertexIndex] = new Vector3(
                         topLeft.x + (i / fDef),
-                        topLeft.y + (j / fDef),
-                        position.z);
+                        topLeft.y,
+                        topLeft.z + (j / fDef));
                 }
             }
             return vertices;

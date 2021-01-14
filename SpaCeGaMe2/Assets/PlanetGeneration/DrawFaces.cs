@@ -48,7 +48,7 @@ namespace PlanetGeneration
             var colors = new Color[vertices.Length];
             for (int i = 0; i < colors.Length; i++)
             {
-                var colVal = vertices[i].z;
+                var colVal = vertices[i].y;
                 if (terrainColors)
                 {
                     // TODO: Instead of incrementing between 0 and 1, go between min and max verts[i].z value.
@@ -62,6 +62,7 @@ namespace PlanetGeneration
                         colors[i] = Color.white;
                 }
                 else
+                // TODO: Crush values to value between 0 and 1 using min and max verts
                     colors[i] = new Color(colVal, colVal, colVal);
             }
             return colors;
@@ -72,7 +73,7 @@ namespace PlanetGeneration
             var uvs = new Vector2[vertices.Length];
             for (int i = 0; i < uvs.Length; i++)
             {
-                uvs[i] = new Vector2(vertices[i].x, vertices[i].y);
+                uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
             }
             return uvs;
         }
