@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &891751914
 Transform:
   m_ObjectHideFlags: 0
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 891751913}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 934880966695707333}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &891751917
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 934880966695707330}
   - component: {fileID: 2860436676659310517}
   - component: {fileID: 9150492505122003374}
+  - component: {fileID: 1371655338}
   m_Layer: 0
   m_Name: Planet
   m_TagString: Untagged
@@ -192,11 +193,23 @@ MonoBehaviour:
   lacunarity: 2.14
   sparcity: 0.5
   directions: {fileID: 11400000, guid: ba60a4f64ac43b641ace660d9045f708, type: 2}
-  planetFaces: {fileID: 11400000, guid: c6d547f537a784c409c7743d28bbf90d, type: 2}
   noiseLayers:
-  - intensity: 0.333
+  - intensity: 1
     frequency: 0.122
-  - intensity: 0
+  - intensity: 1
     frequency: 0
-  - intensity: 0
+  - intensity: 1
     frequency: 0
+--- !u!114 &1371655338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934880966695707334}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dffc18e275910584f8f19ac04685746e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetFaces: {fileID: 11400000, guid: c6d547f537a784c409c7743d28bbf90d, type: 2}
