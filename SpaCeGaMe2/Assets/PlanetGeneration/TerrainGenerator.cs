@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ScriptableObjects;
 using UnityEngine;
+using Utils;
 
 namespace PlanetGeneration
 {
@@ -12,16 +13,17 @@ namespace PlanetGeneration
         [Range(1, 5)]
         public int definition = 1;
 
-        [Range(1,10)]
-        public float persistence  = 1;
-        [Range(1,8)]
+        [Range(0,1)]
+        public float persistence  = .5f;
+        [Range(1,4)]
         public float lacunarity = 1;
         [Range(0,1)]
         public float sparcity = .5f;
 
         public Directions directions;
-
         public NoiseLayer[] noiseLayers;
+
+        SimplexNoise noiseMaker;
         float constDisplacementX;
         float constDisplacementY;
 
@@ -60,6 +62,7 @@ namespace PlanetGeneration
             Random.InitState(name.GetHashCode());
             constDisplacementX = Random.value;
             constDisplacementY = Random.value;
+            noiseMaker = new SimplexNoise();
             Refresh();
         }
 
@@ -90,8 +93,9 @@ namespace PlanetGeneration
 
         Vector3[] GetNoisy(Vector3[] vertices)
         {
-            float maxNoise = 0;
+            float maxNoise = float.MinValue;
             float minNoise = float.MaxValue;
+            var vertexNoise = new float[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
                 var loc = vertices[i] - transform.position;
@@ -100,22 +104,27 @@ namespace PlanetGeneration
                     maxNoise = noise;
                 if (noise < minNoise)
                     minNoise = noise;
-                vertices[i] = loc + (loc.normalized * noise);
+                vertexNoise[i] = noise;
             }
-            return vertices;
 
+            // TODO: Turn back on after figuring out new noise.
             // float range = maxNoise-minNoise;
-            // for (int j = 0; j < vertices.Length; j++)
+            // for (int i = 0; i < vertices.Length; i++)
             // {
-            //     float percentile = (vertices[j].y - minNoise) / range;
-            //     vertices[j].y *= percentile - sparcity;
-            //     // TODO: Fix sparcity normalization
-            //     // if (percentile < sparcity)
-            //     //     vertices[j].y *= sparcity - percentile;
+            //     float percentile = (vertexNoise[i] - minNoise) / range;
+            //     var sparcePercentile = Mathf.Max(percentile - sparcity, );
+            //     vertexNoise[i] = (vertexNoise[i] * sparcePercentile) + minNoise;
             // }
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var loc = vertices[i] - transform.position;
+                vertices[i] = loc + (loc.normalized * vertexNoise[i]);
+            }
+
+            return vertices;
         }
 
-        // TODO: Somethings wrong with lacunarity and persistence.
         float MakeSomeNoise(Vector3 v)
         {
             float noise = 0;
@@ -123,28 +132,12 @@ namespace PlanetGeneration
             float amp = 1;
             for (int i = 0; i < noiseLayers.Length; i++)
             {
+                freq = Mathf.Pow(lacunarity, i);
+                amp = Mathf.Pow(persistence, i);
                 var layer = noiseLayers[i];
-                freq *= layer.frequency * Mathf.Pow(lacunarity, i);
-                float fx = freq * v.x;
-                float fy = freq * v.y;
-                float fz = freq * v.z;
-                var noises = new float[6]
-                {
-                    Mathf.PerlinNoise(fx, fy),
-                    Mathf.PerlinNoise(fx, fz),
-                    Mathf.PerlinNoise(fy, fz),
-                    Mathf.PerlinNoise(fy, fx),
-                    Mathf.PerlinNoise(fz, fx),
-                    Mathf.PerlinNoise(fz, fy),
-                };
-                float totNoise = 0;
-                for (int j = 0; j < noises.Length; j++)
-                {
-                    totNoise += noises[j];
-                }
-                float meanNoise = totNoise / noises.Length;
-                amp *= layer.intensity * Mathf.Pow(persistence, i);
-                noise += meanNoise * amp;
+
+                var vNoise = noiseMaker.Evaluate(v * freq * layer.frequency);
+                noise += vNoise * layer.intensity * amp;
             }
             return noise;
         }
@@ -158,6 +151,29 @@ namespace PlanetGeneration
                 vertices[i] = rad.normalized * radiusLength;
             }
             return vertices;
+        }
+
+        float Perlin3d(Vector3 vector, float frequency)
+        {
+            float fx = frequency * vector.x;
+            float fy = frequency * vector.y;
+            float fz = frequency * vector.z;
+            var noises = new float[6]
+            {
+                Mathf.PerlinNoise(fx, fy),
+                Mathf.PerlinNoise(fx, fz),
+                Mathf.PerlinNoise(fy, fz),
+                Mathf.PerlinNoise(fy, fx),
+                Mathf.PerlinNoise(fz, fx),
+                Mathf.PerlinNoise(fz, fy),
+            };
+
+            float totNoise = 0;
+            for (int j = 0; j < noises.Length; j++)
+            {
+                totNoise += noises[j];
+            }
+            return totNoise / noises.Length;
         }
     }
 }

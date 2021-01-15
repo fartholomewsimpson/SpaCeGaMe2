@@ -5,9 +5,9 @@ namespace PlanetGeneration
     [System.Serializable]
     public class NoiseLayer
     {
-        [Range(1,2)]
+        [Range(0,10)]
         public float intensity;
-        [Range(0,.5f)]
+        [Range(0,1)]
         public float frequency;
     }
 }
