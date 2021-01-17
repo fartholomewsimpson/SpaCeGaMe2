@@ -19,6 +19,8 @@ namespace PlanetGeneration
         public float lacunarity = 1;
         [Range(0,1)]
         public float sparcity = .5f;
+        [Range(-.5f,.5f)]
+        public float noiseDisplacement = 0;
 
         public Directions directions;
         public NoiseLayer[] noiseLayers;
@@ -107,14 +109,11 @@ namespace PlanetGeneration
                 vertexNoise[i] = noise;
             }
 
-            // TODO: Turn back on after figuring out new noise.
-            // float range = maxNoise-minNoise;
-            // for (int i = 0; i < vertices.Length; i++)
-            // {
-            //     float percentile = (vertexNoise[i] - minNoise) / range;
-            //     var sparcePercentile = Mathf.Max(percentile - sparcity, );
-            //     vertexNoise[i] = (vertexNoise[i] * sparcePercentile) + minNoise;
-            // }
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var sparcePercentile = Mathf.Max(Mathf.Abs(vertexNoise[i]) - sparcity, 0);
+                vertexNoise[i] = vertexNoise[i] * sparcePercentile;
+            }
 
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -125,6 +124,9 @@ namespace PlanetGeneration
             return vertices;
         }
 
+        /// <summary>
+        /// Creates amplified noise.
+        /// </summary>
         float MakeSomeNoise(Vector3 v)
         {
             float noise = 0;
@@ -137,6 +139,7 @@ namespace PlanetGeneration
                 var layer = noiseLayers[i];
 
                 var vNoise = noiseMaker.Evaluate(v * freq * layer.frequency);
+                vNoise += noiseDisplacement;
                 noise += vNoise * layer.intensity * amp;
             }
             return noise;
